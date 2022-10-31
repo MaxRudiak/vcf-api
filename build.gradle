@@ -1,14 +1,16 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version "$springBootVersion"
-	id 'io.spring.dependency-management' version "$springDependencyManagementVersion"
+	id "org.springframework.boot" version "$springFrameworkBootVersion"
+	id "io.spring.dependency-management" version "$springDependencyManagementVersion"
+	id 'checkstyle'
+	id 'pmd'
 }
 
-group = 'com.rudiak.vcfapi'
-version = '1.0-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+group 'com.epam.bfxtrn.vcfapi'
+version '1.0-SNAPSHOT'
 
 repositories {
 	mavenCentral()
@@ -16,8 +18,11 @@ repositories {
 
 dependencies {
 	//Spring
-	implementation "org.springframework.boot:spring-boot-starter-data-jdbc:$springBootVersion"
-	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+	implementation "org.springframework.boot:spring-boot-starter-jdbc"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+
+	//H2 DB
+	runtimeOnly "com.h2database:h2:$h2DatabaseVersion"
 
 	//Lombok
 	compileOnly "org.projectlombok:lombok:$lombokVersion"
@@ -25,14 +30,17 @@ dependencies {
 	testCompileOnly "org.projectlombok:lombok:$lombokVersion"
 	testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
-	//H2
-	runtimeOnly "com.h2database:h2:$h2DatabaseVersion"
-
 	//Swagger2
 	implementation "io.springfox:springfox-boot-starter:$swaggerVersion"
 
-	//JUnit
-	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+	//flyway
+	implementation "org.flywaydb:flyway-core:$flywayVersion"
+
+	//HTSJDK
+	implementation "com.github.samtools:htsjdk:$htsjdkVersion"
+
+	//spring-boot-starter-test
+	testImplementation "org.springframework.boot:spring-boot-starter-test:$springFrameworkBootVersion"
 }
 
 test {

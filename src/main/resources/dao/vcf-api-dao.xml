@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="com.rudiak.vcfapi.dao.VcfFileDao" id="vcf_FileDao" autowire="byName">
+        <property name="getAllFilesQuery">
+            <value>
+                <![CDATA[
+                SELECT
+                      vcf_file_descriptor.id AS file_id,
+                      vcf_file_descriptor.id_author,
+                      vcf_file_descriptor.byte_file_size,
+                      vcf_file_descriptor.name,
+                      vcf_file_descriptor.file_path,
+                      vcf_file_descriptor.index_file_path,
+                      author.id AS author_id,
+                      author.name AS author_name,
+                      author.email AS author_email
+                FROM vcf_file_descriptor
+                INNER JOIN author
+                ON vcf_file_descriptor.id_author=author.id
+                ]]>
+            </value>
+        </property>
+        <property name="deleteFileByIdQuery">
+            <value>
+                <![CDATA[
+                DELETE from vcf_file_descriptor
+                WHERE vcf_file_descriptor.id=:FILE_ID;
+                ]]>
+            </value>
+        </property>
+        <property name="loadVcfFileDescriptorByIdQuery">
+            <value>
+                <![CDATA[
+                SELECT
+                      vcf_file_descriptor.id AS file_id,
+                      vcf_file_descriptor.id_author,
+                      vcf_file_descriptor.byte_file_size,
+                      vcf_file_descriptor.name,
+                      vcf_file_descriptor.file_path,
+                      vcf_file_descriptor.index_file_path,
+                      author.id AS author_id,
+                      author.name AS author_name,
+                      author.email AS author_email
+                FROM vcf_file_descriptor
+                INNER JOIN author
+                ON vcf_file_descriptor.id_author=author.id
+                WHERE vcf_file_descriptor.id=:FILE_ID;
+                ]]>
+            </value>
+        </property>
+        <property name="loadVcfFileInfoHeaderByFileIdQuery">
+            <value>
+                <![CDATA[
+                SELECT
+                      id header_id,
+                      id_vcf_file_descriptor header_id_vcf_file_descriptor,
+                      id_info header_id_info,
+                      number header_number,
+                      type header_type,
+                      description header_description,
+                      source header_source,
+                      version header_version
+                FROM vcf_file_info_header
+                WHERE id_vcf_file_descriptor = :FILE_ID;
+                ]]>
+            </value>
+        </property>
+        <property name="getNewIdForDescriptorQuery">
+            <value>
+                <![CDATA[
+                SELECT
+                    file_id_seq.NEXTVAL as new_file_id
+                ]]>
+            </value>
+        </property>
+        <property name="createDescriptorQuery">
+            <value>
+                <![CDATA[
+                INSERT INTO vcf_file_descriptor
+                    (id,
+                     id_author,
+                     name,
+                     file_path,
+                     index_file_path,
+                     byte_file_size)
+                    VALUES
+                    (:FILE_ID,
+                     :ID_AUTHOR,
+                     :NAME,
+                     :FILE_PATH,
+                     :INDEX_FILE_PATH,
+                     :BYTE_FILE_SIZE)
+                ]]>
+            </value>
+        </property>
+        <property name="loadVcfFileDescriptorByNameQuery">
+            <value>
+                <![CDATA[
+                SELECT
+                      vcf_file_descriptor.id AS file_id,
+                      vcf_file_descriptor.id_author,
+                      vcf_file_descriptor.byte_file_size,
+                      vcf_file_descriptor.name,
+                      vcf_file_descriptor.file_path,
+                      vcf_file_descriptor.index_file_path,
+                      author.id AS author_id,
+                      author.name AS author_name,
+                      author.email AS author_email
+                FROM vcf_file_descriptor
+                INNER JOIN author
+                ON vcf_file_descriptor.id_author=author.id
+                WHERE vcf_file_descriptor.name=:NAME;
+                ]]>
+            </value>
+        </property>
+        <property name="createInfoHeaderQuery">
+            <value>
+                <![CDATA[
+                INSERT INTO vcf_file_info_header
+                    (id_vcf_file_descriptor,
+                     id_info,
+                     number,
+                     type,
+                     description,
+                     source,
+                     version)
+                VALUES
+                    (:HEADER_ID_VCF_FILE_DESCRIPTOR,
+                     :HEADER_ID_INFO,
+                     :HEADER_NUMBER,
+                     :HEADER_TYPE,
+                     :HEADER_DESCRIPTION,
+                     :HEADER_SOURCE,
+                     :HEADER_VERSION)
+                ]]>
+            </value>
+        </property>
+    </bean>
+</beans>

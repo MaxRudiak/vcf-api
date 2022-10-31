@@ -4,11 +4,13 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileRegistrationRequest {
+
     private String fileName;
     private String filePath;
     private String indexFilePath;
+
 }

@@ -1,7 +1,9 @@
 package com.rudiak.vcfapi.controller;
 
 import com.rudiak.vcfapi.entity.FileRegistrationRequest;
+import com.rudiak.vcfapi.entity.VariationRequest;
 import com.rudiak.vcfapi.entity.VcfFileDescriptor;
+import com.rudiak.vcfapi.entity.VcfFileSearchResult;
 import com.rudiak.vcfapi.service.VcfFileService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -12,20 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Getter
 @Setter
 public class VcfFileController {
 
-    private static final String INTERNAL_ERROR = "Internal error";
     private final VcfFileService vcfFileService;
+    private static final String INTERNAL_ERROR = "Internal error";
 
     @Autowired
-    public VcfFileController(final VcfFileService vcfFileService) {
+    public VcfFileController(VcfFileService vcfFileService) {
         this.vcfFileService = vcfFileService;
     }
 
-    @ApiOperation(value = "Register VC file in DB", notes =
+    @ApiOperation(value = "Register VCF file in DB", notes =
             "Register VCF file in the database using file information passed in the request")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "VCF file successfully registered in the DB"),
@@ -40,8 +44,43 @@ public class VcfFileController {
         return vcfFileService.registerVcfFile(fileRegistrationRequest);
     }
 
+    @ApiOperation(value = "Get list of registered VCF files", notes =
+            "Get list of all registered in the database VCF files")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of files successfully received"),
+            @ApiResponse(code = 500, message = INTERNAL_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/files")
+    public List<VcfFileDescriptor> listFile() {
+        return vcfFileService.loadAll();
+    }
 
+    @ApiOperation(value = "Load variations from VCF file", notes =
+            "Load variations from a VCF file using genomic coordinates passed in the request")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Information successfully received"),
+            @ApiResponse(code = 404, message = "VCF file not found"),
+            @ApiResponse(code = 400, message = "Missing or invalid request body"),
+            @ApiResponse(code = 500, message = INTERNAL_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/files/search")
+    public VcfFileSearchResult readInformation(@RequestBody VariationRequest variationRequest) {
+        return vcfFileService.readInformation(variationRequest);
+    }
 
-
-
+    @ApiOperation(value = "Delete VCF file from DB", notes =
+            "Delete VCF file from database using fileID passed the request")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File successfully deleted"),
+            @ApiResponse(code = 404, message = "VCF file not found"),
+            @ApiResponse(code = 500, message = INTERNAL_ERROR)
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/files/{id}")
+    public VcfFileDescriptor deleteFile(@PathVariable("id") int id) {
+        return vcfFileService.deleteById(id);
+    }
 }
+
